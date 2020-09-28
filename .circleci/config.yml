@@ -4,83 +4,102 @@ orbs:
   maven: circleci/maven@1.0.2
 
 jobs:
-  e2e-test:
+  build:
     docker:
-      - image: circleci/android:api-30
       - image: circleci/openjdk:8-jdk
     steps:
       - run:
-          name: List Images
+          name: Install Docker Compose
           command: |
-            pwd
-            sdkmanager --list --verbose | grep system-images
+            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+            docker-compose -v
       - run:
-          name: Setup Emulator
+          name: Start Container
           command: |
-            sdkmanager "system-images;android-25;google_apis;armeabi-v7a" &&
-            echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
-      - run:
-          name: Launch Emulator
-          command: |
-            cd ${ANDROID_HOME}/emulator;ls
-            export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-            emulator -avd test -skin 1080x2220 -no-boot-anim -no-audio -no-window -accel auto
-          background: true
-      - run:
-          name: Wait for Emulator
-          command: |
-            pwd
-            circle-android wait-for-boot
-            adb shell input keyevent 82
-      - run:
-          name: Install Node
-          command: |
-            cd
-            pwd
-            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-            sudo apt install nodejs
-      - run:
-          name: Check Node and NPM Version
-          command: |
-            pwd
-            node --version
-            npm --version
-      - run:
-          name: Install Appium
-          command: |
-            cd
-            pwd
-            sudo npm update -g
-            sudo npm install appium wd
-      - run:
-          name: Start Appium
-          command:
-            pwd
-            appium &
-          background: true
-      - run:
-          name: Wait Until Appium Boot
-          command: sleep 30
-      - run:
-          name: Install APK
-          command: adb install src/test/resources/app/TrianguloApp.apk
-      - checkout
-      - run:
-          name: Run Tests
-          command:
-            cd
-            mvn clean test
-      - store_test_results:
-          path: target/surefire-reports
-      - store_artifacts:
-          path: target/surefire-reports
-          destination: e2e-results
+            set -x
+            docker-compose up -d
+            sleep 60
+
+#  e2e-test:
+#    docker:
+#      - image: circleci/android:api-30
+#      - image: circleci/openjdk:8-jdk
+#    steps:
+#      - run:
+#          name: List Images
+#          command: |
+#            pwd
+#            sdkmanager --list --verbose | grep system-images
+#      - run:
+#          name: Setup Emulator
+#          command: |
+#            sdkmanager "system-images;android-25;google_apis;armeabi-v7a" &&
+#            echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
+#      - run:
+#          name: Launch Emulator
+#          command: |
+#            cd ${ANDROID_HOME}/emulator;ls
+#            export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
+#            emulator -avd test -skin 1080x2220 -no-boot-anim -no-audio -no-window -accel auto
+#          background: true
+#      - run:
+#          name: Wait for Emulator
+#          command: |
+#            pwd
+#            circle-android wait-for-boot
+#            adb shell input keyevent 82
+#      - run:
+#          name: Install Node
+#          command: |
+#            cd
+#            pwd
+#            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+#            sudo apt install nodejs
+#      - run:
+#          name: Check Node and NPM Version
+#          command: |
+#            pwd
+#            node --version
+#            npm --version
+#      - run:
+#          name: Install Appium
+#          command: |
+#            cd
+#            pwd
+#            sudo npm update -g
+#            sudo npm install appium wd
+#      - run:
+#          name: Start Appium
+#          command:
+#            pwd
+#            appium &
+#          background: true
+#      - run:
+#          name: Wait Until Appium Boot
+#          command: sleep 30
+#      - run:
+#          name: Install APK
+#          command: adb install src/test/resources/app/TrianguloApp.apk
+#      - checkout
+#      - run:
+#          name: Run Tests
+#          command:
+#            cd
+#            mvn clean test
+#      - store_test_results:
+#          path: target/surefire-reports
+#      - store_artifacts:
+#          path: target/surefire-reports
+#          destination: e2e-results
 
 workflows:
   test:
     jobs:
-      - maven/test:
-          command: "clean install -DskipTests=true"
-      - e2e-test:
-          requires:
-            - maven/test
+      - build
+#      - maven/test:
+#          command: "clean install -DskipTests=true"
+#      - e2e-test:
+#          requires:
+#            - maven/test
