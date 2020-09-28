@@ -21,7 +21,7 @@ jobs:
             cd
             pwd
             ls
-            cd poc-appium-circleci
+            cd project/poc-appium-circleci/src
             ls
             docker-compose up -d
 
