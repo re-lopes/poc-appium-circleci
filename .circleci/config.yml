@@ -19,8 +19,9 @@ jobs:
           name: Start Container
           command: |
             set -x
-            docker-compose up -d
+            pwd
             ls
+            docker-compose up -d
 
 #  e2e-test:
 #    docker:
