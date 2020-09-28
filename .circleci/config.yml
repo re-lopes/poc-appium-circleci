@@ -5,11 +5,9 @@ orbs:
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
     steps:
-      - checkout
-      - run: mvn clean install -DskipTests=true
+      - maven/test:
+          command: "clean install -DskipTests=true"
   e2e-test:
     docker:
       - image: circleci/android:api-30
@@ -17,11 +15,14 @@ jobs:
     steps:
       - run:
           name: List Images
-          command: sdkmanager --list --verbose | grep system-images
+          command: |
+            pwd
+            sdkmanager --list --verbose | grep system-images
       - run:
           name: Setup Emulator
-          command: sdkmanager "system-images;android-25;default;armeabi-v7a" &&
-            echo "no" | avdmanager create avd -n test -k "system-images;android-25;default;armeabi-v7a"
+          command: |
+            sdkmanager "system-images;android-25;google_apis;armeabi-v7a" &&
+            echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
       - run:
           name: Launch Emulator
           command: |
@@ -79,7 +80,6 @@ jobs:
           path: target/surefire-reports
           destination: e2e-results
 workflows:
-  version: 2
   test:
     jobs:
       - build
