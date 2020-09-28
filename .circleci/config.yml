@@ -75,10 +75,11 @@ jobs:
       - store_artifacts:
           path: target/surefire-reports
           destination: e2e-results
+
 workflows:
   test:
     jobs:
-      - build:
+      - maven/test:
           command: "clean install -DskipTests=true"
       - e2e-test:
           requires:
