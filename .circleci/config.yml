@@ -20,7 +20,7 @@ jobs:
           command: |
             set -x
             docker-compose up -d
-            sleep 60
+            ls
 
 #  e2e-test:
 #    docker:
