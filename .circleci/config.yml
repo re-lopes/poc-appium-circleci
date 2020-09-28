@@ -1,13 +1,9 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@0.0.12
+  maven: circleci/maven@1.0.2
 
 jobs:
-  build:
-    steps:
-      - maven/test:
-          command: "clean install -DskipTests=true"
   e2e-test:
     docker:
       - image: circleci/android:api-30
@@ -82,7 +78,8 @@ jobs:
 workflows:
   test:
     jobs:
-      - build
+      - build:
+          command: "clean install -DskipTests=true"
       - e2e-test:
           requires:
             - build
