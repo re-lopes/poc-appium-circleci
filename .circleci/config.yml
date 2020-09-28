@@ -83,4 +83,4 @@ workflows:
           command: "clean install -DskipTests=true"
       - e2e-test:
           requires:
-            - build
+            - maven/test
