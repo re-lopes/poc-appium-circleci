@@ -5,6 +5,7 @@ orbs:
 
 jobs:
   build:
+    working_directory: ~/poc-appium-circleci
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
@@ -18,6 +19,7 @@ jobs:
       - run:
           name: Start Container
           command: |
+            cd
             set -x
             pwd
             ls
