@@ -1,7 +1,7 @@
 version: 2.1
 
-orbs:
-  maven: circleci/maven@1.0.2
+#orbs:
+#  maven: circleci/maven@1.0.2
 
 jobs:
   build:
@@ -18,11 +18,7 @@ jobs:
           name: Start Container
           command: |
             set -x
-            cd
-            pwd
-            ls
-            cd project/poc-appium-circleci/src
-            ls
+            ls -a
             docker-compose up -d
 
 #  e2e-test:
