@@ -20,15 +20,14 @@ jobs:
           command: sdkmanager --list --verbose | grep system-images
       - run:
           name: Setup Emulator
-          command: |
-            echo "y" | sdkmanager "system-images;android-28;default;x86" &&
-            echo "no" | avdmanager create avd -n test -k "system-images;android-28;default;x86"
+          command: sdkmanager "system-images;android-25;default;armeabi-v7a" &&
+            echo "no" | avdmanager create avd -n test -k "system-images;android-25;default;armeabi-v7a"
       - run:
           name: Launch Emulator
           command: |
             cd ${ANDROID_HOME}/emulator;ls
             export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-            emulator -avd test -skin 1080x2220 -no-window -no-audio -no-boot-anim -no-window -accel auto
+            emulator -avd test -skin 1080x2220 -no-boot-anim -no-audio -no-window -accel auto
           background: true
       - run:
           name: Wait for Emulator
