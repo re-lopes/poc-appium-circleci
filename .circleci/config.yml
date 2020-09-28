@@ -19,7 +19,6 @@ jobs:
       - run:
           name: Start Container
           command: |
-            cd
             set -x
             pwd
             ls
